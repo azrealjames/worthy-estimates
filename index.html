@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Worthy Estimates</title>
+<meta name="description" content="Mobile-first estimate builder — line items, notes, and city-based tax totals.">
+<meta name="theme-color" content="#182235">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="appbar">
+  <div class="appbar-stripe"></div>
+  <div class="appbar-row">
+    <span class="appbar-brand" id="appbarBrand">Estimates</span>
+    <span class="appbar-badge" id="appbarBadge"></span>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ============ ESTIMATE LIST ============ -->
+  <section class="view" id="view-list">
+    <div class="list-head">
+      <h1 class="view-title">Your Estimates</h1>
+      <button class="btn btn-primary" id="btnNewEstimate">+ New Estimate</button>
+    </div>
+    <div id="estimateList" class="estimate-list"></div>
+    <div id="listEmpty" class="empty hidden">
+      <div class="empty-mark">№</div>
+      <p><strong>No estimates yet.</strong></p>
+      <p>Tap <em>New Estimate</em> to write your first one. Set up your business header and city tax rates in Settings.</p>
+    </div>
+  </section>
+
+  <!-- ============ EDITOR ============ -->
+  <section class="view hidden" id="view-editor">
+
+    <div class="editor-topline">
+      <button class="btn btn-ghost" id="btnBackToList">‹ All estimates</button>
+      <span class="est-number mono" id="edNumber"></span>
+    </div>
+
+    <!-- Business header preview -->
+    <div class="card card-letterhead" id="letterheadCard" title="Tap to edit in Settings">
+      <div class="letterhead">
+        <div class="lh-name" id="lhName">Your Business Name</div>
+        <div class="lh-tagline" id="lhTagline"></div>
+        <div class="lh-contact mono" id="lhContact"></div>
+      </div>
+      <button class="chip-link" id="btnEditBusiness">Edit header</button>
+    </div>
+
+    <!-- Estimate meta -->
+    <div class="card">
+      <div class="card-label">Estimate details</div>
+      <div class="field-row">
+        <label class="field">
+          <span>Date</span>
+          <input type="date" id="edDate">
+        </label>
+        <label class="field">
+          <span>Title / Job</span>
+          <input type="text" id="edTitle" placeholder="Interior repaint — 2nd floor">
+        </label>
+      </div>
+      <label class="field hidden" id="dueWrap">
+        <span>Payment due</span>
+        <input type="date" id="edDue">
+      </label>
+    </div>
+
+    <!-- Customer -->
+    <div class="card">
+      <div class="card-label">Customer</div>
+      <label class="field"><span>Name</span>
+        <input type="text" id="cuName" placeholder="Customer name" autocomplete="off"></label>
+      <div class="field-row">
+        <label class="field"><span>Phone</span>
+          <input type="tel" id="cuPhone" placeholder="(555) 555-5555"></label>
+        <label class="field"><span>Email</span>
+          <input type="email" id="cuEmail" placeholder="name@email.com"></label>
+      </div>
+      <label class="field"><span>Job address</span>
+        <textarea id="cuAddress" rows="2" placeholder="Street, City, State ZIP"></textarea></label>
+    </div>
+
+    <!-- Work items -->
+    <div class="card">
+      <div class="card-label">Work performed</div>
+      <div id="itemsWrap"></div>
+      <button class="btn btn-dashed" id="btnAddItem">+ Add line item</button>
+    </div>
+
+    <!-- Totals -->
+    <div class="card card-totals">
+      <div class="card-label">Totals</div>
+      <label class="field">
+        <span>Tax city</span>
+        <select id="edCity"></select>
+      </label>
+      <div class="totals-box">
+        <div class="t-row"><span>Subtotal</span><span class="mono" id="tSubtotal">$0.00</span></div>
+        <div class="t-row"><span id="tTaxLabel">Tax</span><span class="mono" id="tTax">$0.00</span></div>
+        <div class="t-row t-grand"><span>Grand&nbsp;Total</span><span class="mono" id="tGrand">$0.00</span></div>
+      </div>
+    </div>
+
+    <div class="editor-actions">
+      <button class="btn btn-primary btn-block" id="btnShare">Share PDF — Text / Email</button>
+      <button class="btn btn-outline btn-block" id="btnConvert">Convert to Invoice →</button>
+      <button class="btn btn-outline btn-block hidden" id="btnTogglePaid">Mark as Paid</button>
+      <button class="btn btn-outline btn-block" id="btnPreview">Preview &amp; Print / PDF</button>
+      <button class="btn btn-danger-ghost btn-block" id="btnDeleteEstimate">Delete</button>
+    </div>
+    <p class="autosave-note mono" id="autosaveNote">Saved</p>
+  </section>
+
+  <!-- ============ SETTINGS ============ -->
+  <section class="view hidden" id="view-settings">
+    <h1 class="view-title">Settings</h1>
+
+    <div class="card">
+      <div class="card-label">Business header</div>
+      <p class="hint">Shows at the top of every estimate. Make it anything you want.</p>
+      <label class="field"><span>Business name</span>
+        <input type="text" id="bzName" placeholder="Hovey Painting LLC"></label>
+      <label class="field"><span>Tagline / license #</span>
+        <input type="text" id="bzTagline" placeholder="Licensed &amp; Insured · Lic #123456"></label>
+      <div class="field-row">
+        <label class="field"><span>Phone</span>
+          <input type="tel" id="bzPhone" placeholder="(555) 555-5555"></label>
+        <label class="field"><span>Email</span>
+          <input type="email" id="bzEmail" placeholder="you@business.com"></label>
+      </div>
+      <label class="field"><span>Address</span>
+        <textarea id="bzAddress" rows="2" placeholder="Street, City, State ZIP"></textarea></label>
+      <label class="field"><span>Footer note (printed on estimates)</span>
+        <textarea id="bzFooter" rows="2" placeholder="Estimate valid for 30 days. Thank you for your business!"></textarea></label>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Payment methods (shown on invoices)</div>
+      <p class="hint">Fill in only the ones you use. They appear in a "How to pay" section on every invoice, and the PayPal/Venmo ones become tappable links.</p>
+      <label class="field"><span>PayPal.Me username</span>
+        <input type="text" id="payPaypal" placeholder="yourname  →  paypal.me/yourname" autocapitalize="none"></label>
+      <label class="field"><span>Venmo username</span>
+        <input type="text" id="payVenmo" placeholder="yourname (without the @)" autocapitalize="none"></label>
+      <label class="field"><span>Zelle — phone or email</span>
+        <input type="text" id="payZelle" placeholder="(555) 555-5555 or you@email.com" autocapitalize="none"></label>
+      <label class="field"><span>Zelle — name on the account</span>
+        <input type="text" id="payZelleName" placeholder="So customers can confirm the recipient"></label>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Cities &amp; tax rates</div>
+      <p class="hint">Add each city you work in with its sales tax rate. Pick the city on each estimate.</p>
+      <div id="cityList" class="city-list"></div>
+      <div class="city-add">
+        <input type="text" id="newCityName" placeholder="City name">
+        <input type="number" id="newCityRate" placeholder="Tax %" step="0.001" min="0" inputmode="decimal">
+        <button class="btn btn-primary" id="btnAddCity">Add</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">About</div>
+      <p class="hint">Worthy Estimates · offline-ready PWA. All data stays on this device.</p>
+    </div>
+  </section>
+</main>
+
+<!-- ============ BOTTOM NAV ============ -->
+<nav class="tabbar" id="tabbar">
+  <button class="tab active" data-view="list">
+    <span class="tab-ico">☰</span><span>Estimates</span>
+  </button>
+  <button class="tab" data-view="editor" id="tabEditor" disabled>
+    <span class="tab-ico">✎</span><span>Editor</span>
+  </button>
+  <button class="tab" data-view="settings">
+    <span class="tab-ico">⚙</span><span>Settings</span>
+  </button>
+</nav>
+
+<!-- ============ PRINT / PREVIEW OVERLAY ============ -->
+<div class="preview-overlay hidden" id="previewOverlay">
+  <div class="preview-bar">
+    <button class="btn btn-ghost" id="btnClosePreview">‹ Back</button>
+    <div class="preview-bar-actions">
+      <button class="btn btn-outline btn-on-dark" id="btnPrint">Print</button>
+      <button class="btn btn-primary" id="btnShareFromPreview">Share PDF</button>
+    </div>
+  </div>
+  <div class="sheet" id="docSheet"></div>
+</div>
+
+<script src="jspdf.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
