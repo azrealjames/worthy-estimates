@@ -1,6 +1,8 @@
 # Worthy Estimates
 
-A mobile-first, offline-ready PWA for writing work estimates on your phone or tablet.
+A mobile-first, offline-ready PWA for writing work estimates and invoices on your phone or tablet.
+
+**Live app: https://azrealjames.github.io/worthy-estimates/**
 
 ## Features
 
@@ -35,15 +37,25 @@ Then open http://localhost:4173.
 
 ## Install on your phone
 
-PWAs require HTTPS (localhost is exempt), so host it anywhere static:
-GitHub Pages, Netlify, Vercel, or Cloudflare Pages — just upload this folder.
+Open **https://azrealjames.github.io/worthy-estimates/** on your phone, then:
 
-Then on your phone:
-
-- **Android / Chrome:** open the URL → menu → **Add to Home screen** → Install
-- **iPhone / Safari:** open the URL → Share → **Add to Home Screen**
+- **Android / Chrome:** menu → **Add to Home screen** → Install
+- **iPhone / Safari:** Share → **Add to Home Screen**
 
 It launches full-screen like a native app and works offline after the first visit.
+
+## Deploying updates
+
+The app is served by GitHub Pages from the `main` branch. Pushing to `main`
+redeploys it within a minute or so:
+
+```
+git add -A && git commit -m "your message" && git push
+```
+
+Bump the `CACHE` version string in `sw.js` whenever you change `app.js`,
+`styles.css`, or `index.html` — otherwise the old service worker keeps serving
+the cached copies and phones won't see the update.
 
 ## Notes
 
