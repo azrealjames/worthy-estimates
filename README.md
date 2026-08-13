@@ -2,7 +2,7 @@
 
 A mobile-first, offline-ready PWA for writing work estimates and invoices on your phone or tablet.
 
-**Live app: https://azrealjames.github.io/worthy-estimates/**
+**Live app: https://www.worthyestimates.com/**
 
 ## Features
 
