@@ -1,5 +1,5 @@
 /* Worthy Estimates service worker — cache-first app shell, runtime cache for fonts */
-const CACHE = "worthy-estimates-v6";
+const CACHE = "worthy-estimates-v7";
 const SHELL = [
   "./",
   "./index.html",

@@ -828,6 +828,57 @@ function closePreview() {
   document.body.style.overflow = "";
 }
 
+/* ---------------- Install prompt ----------------
+   Chrome/Edge/Android fire beforeinstallprompt, which we stash and replay
+   from our own button. iOS has no such event — Safari only installs via the
+   Share sheet — so there we show instructions instead. */
+
+let deferredPrompt = null;
+
+const isStandalone = () =>
+  window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+
+const isIOS = () =>
+  /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+function renderInstall() {
+  const card = $("#installCard");
+  if (!card) return;                       // may fire before the DOM is parsed
+  if (isStandalone()) {                    // already installed — nothing to offer
+    card.classList.add("hidden");
+    return;
+  }
+  if (deferredPrompt) {
+    card.classList.remove("hidden", "install-ios");
+    $("#installTitle").textContent = "Install it on your phone";
+    $("#installText").textContent =
+      "Puts an icon on your home screen and keeps it working with no signal.";
+    return;
+  }
+  if (isIOS()) {
+    card.classList.remove("hidden");
+    card.classList.add("install-ios");
+    $("#installTitle").textContent = "Add it to your home screen";
+    $("#installText").innerHTML =
+      'Tap <span class="install-ios-key">Share</span>, then ' +
+      '<span class="install-ios-key">Add to Home Screen</span>.';
+    return;
+  }
+  card.classList.add("hidden");
+}
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();                      // keep Chrome's own mini-infobar away
+  deferredPrompt = e;
+  renderInstall();
+});
+
+window.addEventListener("appinstalled", () => {
+  deferredPrompt = null;
+  renderInstall();
+});
+
 /* ---------------- Wire-up ---------------- */
 
 function init() {
@@ -901,7 +952,16 @@ function init() {
     syncTypeUI(est);
   });
 
+  $("#btnInstall").addEventListener("click", async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    try { await deferredPrompt.userChoice; } catch (err) { /* dismissed */ }
+    deferredPrompt = null;                 // a prompt event can only be used once
+    renderInstall();
+  });
+
   show("list");
+  renderInstall();
 
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch(err =>

@@ -62,8 +62,21 @@
         </ul>
 
         <button class="btn btn-primary btn-block" id="btnNewEstimateHero">+ Write your first estimate</button>
-        <p class="welcome-tip">It's free. Add it to your home screen to open it like a regular app.</p>
+        <p class="welcome-tip">Free to use. No catch.</p>
       </div>
+    </div>
+
+    <!-- Install prompt: real button on Android/desktop, instructions on iOS,
+         hidden entirely once the app is installed. -->
+    <div class="install-card hidden" id="installCard">
+      <span class="install-ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </span>
+      <div class="install-copy">
+        <strong id="installTitle">Install it on your phone</strong>
+        <span id="installText">Puts an icon on your home screen and keeps it working with no signal.</span>
+      </div>
+      <button class="btn btn-primary install-btn" id="btnInstall">Install</button>
     </div>
 
     <p class="privacy-footer hidden" id="privacyFooter">
