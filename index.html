@@ -35,11 +35,40 @@
       <button class="btn btn-primary" id="btnNewEstimate">+ New Estimate</button>
     </div>
     <div id="estimateList" class="estimate-list"></div>
-    <div id="listEmpty" class="empty hidden">
-      <div class="empty-mark">№</div>
-      <p><strong>No estimates yet.</strong></p>
-      <p>Tap <em>New Estimate</em> to write your first one. Set up your business header and city tax rates in Settings.</p>
+
+    <!-- First-run screen: what this is, and why it's safe to start typing -->
+    <div id="listEmpty" class="welcome hidden">
+      <div class="welcome-card">
+        <div class="welcome-kicker">Estimates &amp; Invoices</div>
+        <h2 class="welcome-head">Write an estimate right on your phone.</h2>
+        <p class="welcome-sub">Line items with notes, your own business header, city tax rates, and a clean PDF you can text or email to the customer.</p>
+
+        <ul class="trust-list">
+          <li>
+            <span class="trust-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg></span>
+            <div><strong>No sign-up, no account</strong>
+            <span>Start typing. There's nothing to create and no email to hand over.</span></div>
+          </li>
+          <li>
+            <span class="trust-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.58 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></span>
+            <div><strong>Works with no signal</strong>
+            <span>Built to run offline, so it still works in a basement or way out on a job site.</span></div>
+          </li>
+          <li>
+            <span class="trust-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span>
+            <div><strong>Your data stays on your device</strong>
+            <span>Estimates, customers, and payment details are saved in this browser only — none of it is ever uploaded, and nobody else can see it.</span></div>
+          </li>
+        </ul>
+
+        <button class="btn btn-primary btn-block" id="btnNewEstimateHero">+ Write your first estimate</button>
+        <p class="welcome-tip">It's free. Add it to your home screen to open it like a regular app.</p>
+      </div>
     </div>
+
+    <p class="privacy-footer hidden" id="privacyFooter">
+      Saved on this device only · Works offline · No account
+    </p>
   </section>
 
   <!-- ============ EDITOR ============ -->

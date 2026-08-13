@@ -171,7 +171,12 @@ function show(view) {
 function renderList() {
   const wrap = $("#estimateList");
   const ests = [...state.estimates].sort((a, b) => b.updated - a.updated);
-  $("#listEmpty").classList.toggle("hidden", ests.length > 0);
+  const empty = ests.length === 0;
+  // First-time visitors get the welcome screen on its own; once there are
+  // estimates the header takes over and the reassurance shrinks to a footer.
+  $("#listEmpty").classList.toggle("hidden", !empty);
+  $(".list-head").classList.toggle("hidden", empty);
+  $("#privacyFooter").classList.toggle("hidden", empty);
   wrap.innerHTML = ests.map(e => {
     const { grand, city } = calc(e);
     const d = e.date ? new Date(e.date + "T12:00:00").toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" }) : "";
@@ -837,7 +842,8 @@ function init() {
     });
   });
 
-  $("#btnNewEstimate").addEventListener("click", () => openEstimate(newEstimate().id));
+  ["#btnNewEstimate", "#btnNewEstimateHero"].forEach(sel =>
+    $(sel).addEventListener("click", () => openEstimate(newEstimate().id)));
   $("#btnBackToList").addEventListener("click", () => show("list"));
   $("#btnEditBusiness").addEventListener("click", () => show("settings"));
 
