@@ -37,7 +37,7 @@ Then open http://localhost:4173.
 
 ## Install on your phone
 
-Open **https://azrealjames.github.io/worthy-estimates/** on your phone, then:
+Open **https://www.worthyestimates.com/** on your phone, then:
 
 - **Android / Chrome:** menu → **Add to Home screen** → Install
 - **iPhone / Safari:** Share → **Add to Home Screen**
@@ -46,7 +46,7 @@ It launches full-screen like a native app and works offline after the first visi
 
 ## Deploying updates
 
-The app is served by GitHub Pages from the `main` branch. Pushing to `main`
+The app is served by Vercel.com from the `main` branch. Pushing to `main`
 redeploys it within a minute or so:
 
 ```
