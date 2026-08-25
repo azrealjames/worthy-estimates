@@ -1,5 +1,5 @@
 /* Worthy Estimates service worker — cache-first app shell, runtime cache for fonts */
-const CACHE = "worthy-estimates-v7";
+const CACHE = "worthy-estimates-v8";
 const SHELL = [
   "./",
   "./index.html",
@@ -27,6 +27,17 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;
+
+  // Only the app shell and its fonts go through the cache. Analytics and any
+  // other third party goes straight to the network, untouched — a stale cached
+  // analytics script would be worse than none, and beacons must not be served
+  // from cache.
+  const reqUrl = new URL(req.url);
+  const ours =
+    reqUrl.origin === location.origin ||
+    reqUrl.hostname === "fonts.googleapis.com" ||
+    reqUrl.hostname === "fonts.gstatic.com";
+  if (!ours) return;
 
   e.respondWith(
     caches.match(req, { ignoreSearch: req.mode === "navigate" }).then((hit) => {

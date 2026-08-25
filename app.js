@@ -72,6 +72,7 @@ function newEstimate() {
   };
   state.estimates.unshift(est);
   save();
+  track("estimate_created", { total_estimates: state.estimates.length });
   return est;
 }
 
@@ -127,6 +128,14 @@ function paymentOptions(est) {
 /* ---------------- DOM helpers ---------------- */
 
 const $ = (sel) => document.querySelector(sel);
+
+/* Analytics. Never pass customer names, addresses, or dollar amounts in here —
+   counts and types only. Wrapped so an ad blocker, an offline load, or a
+   PostHog outage can never throw inside app code. */
+function track(event, props) {
+  try { window.posthog && window.posthog.capture(event, props); }
+  catch (err) { /* analytics must never break the app */ }
+}
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g,
   (c) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
 
@@ -798,6 +807,7 @@ async function sharePdf() {
         title: `${word} ${est.number}`,
         text: shareText
       });
+      track("document_shared", { type: est.type, method: "share_sheet" });
       return;
     } catch (err) {
       if (err && err.name === "AbortError") return; // user closed the share sheet
@@ -812,6 +822,7 @@ async function sharePdf() {
   document.body.appendChild(a);
   a.click();
   a.remove();
+  track("document_shared", { type: est.type, method: "download" });
   setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
 
@@ -876,6 +887,7 @@ window.addEventListener("beforeinstallprompt", (e) => {
 
 window.addEventListener("appinstalled", () => {
   deferredPrompt = null;
+  track("app_installed");
   renderInstall();
 });
 
@@ -940,6 +952,7 @@ function init() {
     }
     est.updated = Date.now();
     save();
+    track("invoice_created", { line_items: est.items.length });
     openEstimate(est.id);
   });
 
@@ -949,13 +962,16 @@ function init() {
     est.paid = !est.paid;
     est.updated = Date.now();
     save();
+    if (est.paid) track("invoice_marked_paid");
     syncTypeUI(est);
   });
 
   $("#btnInstall").addEventListener("click", async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
-    try { await deferredPrompt.userChoice; } catch (err) { /* dismissed */ }
+    let outcome = "unknown";
+    try { ({ outcome } = await deferredPrompt.userChoice); } catch (err) { /* dismissed */ }
+    track("install_clicked", { outcome });
     deferredPrompt = null;                 // a prompt event can only be used once
     renderInstall();
   });
